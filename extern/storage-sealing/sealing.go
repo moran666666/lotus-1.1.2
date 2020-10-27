@@ -3,8 +3,10 @@ package sealing
 import (
 	"context"
 	"errors"
+	scClient "github.com/moran666666/sector-counter/client"
 	"io"
 	"math"
+	"os"
 	"sync"
 	"time"
 
@@ -339,11 +341,20 @@ func (m *Sealing) newDealSector() (abi.SectorNumber, error) {
 
 	// Now actually create a new sector
 
-	sid, err := m.sc.Next()
-	if err != nil {
-		return 0, xerrors.Errorf("getting sector number: %w", err)
+	var sid abi.SectorNumber
+	if _, ok := os.LookupEnv("SC_TYPE"); ok {
+		sid0, err := scClient.NewClient().GetSectorID(context.Background(), "")
+		if err != nil {
+			return 0, xerrors.Errorf("getting sector number: %w", err)
+		}
+		sid = abi.SectorNumber(sid0)
+	} else {
+		sid0, err := m.sc.Next()
+		if err != nil {
+			return 0, xerrors.Errorf("getting sector number: %w", err)
+		}
+		sid = sid0
 	}
-
 	err = m.sealer.NewSector(context.TODO(), m.minerSector(sid))
 	if err != nil {
 		return 0, xerrors.Errorf("initializing sector: %w", err)

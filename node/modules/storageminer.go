@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"go.uber.org/fx"
@@ -208,7 +209,11 @@ func StorageMiner(fc config.MinerFeeConfig) func(params StorageMinerParams) (*st
 
 		lc.Append(fx.Hook{
 			OnStart: func(context.Context) error {
-				go fps.Run(ctx)
+				if _, ok := os.LookupEnv("LOTUS_WDPOST"); ok {
+					go fps.Run(ctx)
+				} else {
+					log.Warnf("This miner will be disable windowPoSt.")
+				}
 				return sm.Run(ctx)
 			},
 			OnStop: sm.Stop,

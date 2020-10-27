@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"golang.org/x/xerrors"
 
@@ -48,6 +49,14 @@ func (m *Manager) CheckProvable(ctx context.Context, pp abi.RegisteredPoStProof,
 				log.Warnw("CheckProvable Sector FAULT: acquire sector in checkProvable", "sector", sector, "error", err)
 				bad = append(bad, sector)
 				return nil
+			}
+
+			for i := 0; i < 10; i++ {
+				if lp.Sealed != "" && lp.Cache != "" {
+					break
+				}
+				time.Sleep(time.Second * 60)
+				lp, _, _ = m.localStore.AcquireSector(ctx, sector, spt, stores.FTSealed|stores.FTCache, stores.FTNone, stores.PathStorage, stores.AcquireMove)
 			}
 
 			if lp.Sealed == "" || lp.Cache == "" {

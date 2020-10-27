@@ -2,6 +2,8 @@ package sealing
 
 import (
 	"context"
+	scClient "github.com/moran666666/sector-counter/client"
+	"os"
 
 	"golang.org/x/xerrors"
 
@@ -49,12 +51,23 @@ func (m *Sealing) PledgeSector() error {
 
 		size := abi.PaddedPieceSize(m.sealer.SectorSize()).Unpadded()
 
-		sid, err := m.sc.Next()
-		if err != nil {
-			log.Errorf("%+v", err)
-			return
+		var sid abi.SectorNumber
+		if _, ok := os.LookupEnv("SC_TYPE"); ok {
+			sid0, err := scClient.NewClient().GetSectorID(context.Background(), "")
+			if err != nil {
+				log.Errorf("%+v", err)
+				return
+			}
+			sid = abi.SectorNumber(sid0)
+		} else {
+			sid0, err := m.sc.Next()
+			if err != nil {
+				log.Errorf("%+v", err)
+				return
+			}
+			sid = sid0
 		}
-		err = m.sealer.NewSector(ctx, m.minerSector(sid))
+		err := m.sealer.NewSector(ctx, m.minerSector(sid))
 		if err != nil {
 			log.Errorf("%+v", err)
 			return

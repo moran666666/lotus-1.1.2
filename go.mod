@@ -140,6 +140,7 @@ require (
 	gopkg.in/cheggaaa/pb.v1 v1.0.28
 	gotest.tools v2.2.0+incompatible
 	launchpad.net/gocheck v0.0.0-20140225173054-000000000087 // indirect
+	github.com/moran666666/sector-counter v0.0.0-20200819122504-72fe8e09bf44
 )
 
 replace github.com/filecoin-project/lotus => ./
@@ -153,3 +154,5 @@ replace github.com/filecoin-project/test-vectors => ./extern/test-vectors
 replace github.com/supranational/blst => ./extern/fil-blst/blst
 
 replace github.com/filecoin-project/fil-blst => ./extern/fil-blst
+
+replace github.com/moran666666/sector-counter => ./extern/sector-counter
