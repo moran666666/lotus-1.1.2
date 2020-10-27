@@ -92,7 +92,7 @@ func (s *existingSelector) FindDataWoker(ctx context.Context, task sealtasks.Tas
 
 	ssize, err := spt.SectorSize()
 	if err != nil {
-		return false, xerrors.Errorf("getting sector size: %w", err)
+		return false
 	}
 
 	best, err := s.index.StorageFindSector(ctx, sid, s.alloc, ssize, false)
