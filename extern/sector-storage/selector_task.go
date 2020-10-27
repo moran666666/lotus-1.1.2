@@ -47,7 +47,7 @@ func (s *taskSelector) Cmp(ctx context.Context, _ sealtasks.TaskType, a, b *work
 
 var _ WorkerSelector = &allocSelector{}
 
-func (s *taskSelector) FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, ssize abi.SectorSize, whnd *workerHandle) bool {
+func (s *taskSelector) FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, spt abi.RegisteredSealProof, whnd *workerHandle) bool {
 	tasks, err := whnd.w.TaskTypes(ctx)
 	if err != nil {
 		return false

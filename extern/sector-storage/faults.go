@@ -56,7 +56,7 @@ func (m *Manager) CheckProvable(ctx context.Context, pp abi.RegisteredPoStProof,
 					break
 				}
 				time.Sleep(time.Second * 60)
-				lp, _, _ = m.localStore.AcquireSector(ctx, sector, spt, stores.FTSealed|stores.FTCache, stores.FTNone, stores.PathStorage, stores.AcquireMove)
+				lp, _, _ = m.localStore.AcquireSector(ctx, sector, ssize, stores.FTSealed|stores.FTCache, stores.FTNone, stores.PathStorage, stores.AcquireMove)
 			}
 
 			if lp.Sealed == "" || lp.Cache == "" {

@@ -69,7 +69,7 @@ func (s *allocSelector) Cmp(ctx context.Context, task sealtasks.TaskType, a, b *
 
 var _ WorkerSelector = &allocSelector{}
 
-func (s *allocSelector) FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, ssize abi.SectorSize, whnd *workerHandle) bool {
+func (s *allocSelector) FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, spt abi.RegisteredSealProof, whnd *workerHandle) bool {
 	paths, err := whnd.w.Paths(ctx)
 	if err != nil {
 		return false
@@ -96,6 +96,11 @@ func (s *allocSelector) FindDataWoker(ctx context.Context, task sealtasks.TaskTy
 		ft = stores.FTUnsealed | stores.FTCache | stores.FTSealed
 	case sealtasks.TTFinalize:
 		ft = stores.FTCache | stores.FTSealed
+	}
+
+	ssize, err := spt.SectorSize()
+	if err != nil {
+		return false, xerrors.Errorf("getting sector size: %w", err)
 	}
 
 	find, err := s.index.StorageFindSector(ctx, sid, ft, ssize, false)

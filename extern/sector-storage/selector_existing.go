@@ -71,7 +71,7 @@ func (s *existingSelector) Cmp(ctx context.Context, task sealtasks.TaskType, a, 
 
 var _ WorkerSelector = &existingSelector{}
 
-func (s *existingSelector) FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, ssize abi.SectorSize, whnd *workerHandle) bool {
+func (s *existingSelector) FindDataWoker(ctx context.Context, task sealtasks.TaskType, sid abi.SectorID, spt abi.RegisteredSealProof, whnd *workerHandle) bool {
 	tasks, err := whnd.w.TaskTypes(ctx)
 	if err != nil {
 		return false
@@ -88,6 +88,11 @@ func (s *existingSelector) FindDataWoker(ctx context.Context, task sealtasks.Tas
 	have := map[stores.ID]struct{}{}
 	for _, path := range paths {
 		have[path.ID] = struct{}{}
+	}
+
+	ssize, err := spt.SectorSize()
+	if err != nil {
+		return false, xerrors.Errorf("getting sector size: %w", err)
 	}
 
 	best, err := s.index.StorageFindSector(ctx, sid, s.alloc, ssize, false)
